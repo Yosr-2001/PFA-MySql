@@ -24,4 +24,8 @@ public class InventoryController {
 	    public Inventory updateInventory(@PathVariable String productId, @RequestParam int quantity) {
 	        return inventoryService.updateInventory(productId, quantity);
 	    }
+	@PostMapping("/{productId}/add")
+	public Inventory addInventory(@PathVariable String productId, @RequestParam int quantity) {
+		return inventoryService.addInventory(productId, quantity);
+	}
 }

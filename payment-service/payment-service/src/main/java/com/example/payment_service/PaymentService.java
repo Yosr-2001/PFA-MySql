@@ -17,15 +17,19 @@ public class PaymentService {
 	        return paymentRepository.findAll();
 	    }
 
-	    public Payment processPayment(Payment payment) {
-	        Order order = orderClient.getOrderById(payment.getOrderId());
-	        if (order != null) {
-	            payment.setStatus("SUCCESS");
-	            return paymentRepository.save(payment);
-	        } else {
-	        	payment.setStatus("Commande non trouvée");
-	        	return paymentRepository.save(payment);
-	            //*throw new RuntimeException("Commande non trouvée !");*//
-	        }
-	    }
+	public Payment processPayment(Payment payment) {
+		try {
+ 			Order order = orderClient.getOrderById(payment.getOrderId());
+			if (order != null) {
+				payment.setStatus("SUCCESS");
+				return paymentRepository.save(payment);
+			} else {
+				payment.setStatus("Order not found");
+				return paymentRepository.save(payment);
+			}
+		} catch (Exception e) {
+			System.err.println("Error processing payment: " + e.getMessage());
+			throw new RuntimeException("Error processing payment");
+		}
+	}
 }
