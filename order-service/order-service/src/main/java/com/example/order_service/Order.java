@@ -16,6 +16,10 @@ public class Order {
 	}*/
 	@Id
 	    private String id;
+	private String productId;
+	private int quantity;
+	private String status;
+
 	    public String getId() {
 		return id;
 	}
@@ -34,9 +38,7 @@ public class Order {
 	public void setQuantity(int quantity) {
 		this.quantity = quantity;
 	}
-		private String productId;
-	    private int quantity;
-	    private String status;
+
 
 	    // Constructeurs, getters et setters
 	    public String getStatus() {

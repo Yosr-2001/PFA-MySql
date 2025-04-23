@@ -1,23 +1,43 @@
 package com.example.order_service;
 
 import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Service
 public class OrderService {
-	 @Autowired
+	private static final Logger logger = LoggerFactory.getLogger(OrderService.class);
+
+	@Autowired
 	    private OrderRepository orderRepository;
 
 	    @Autowired
 	    private ProductClient productClient;
 
+		public Order addOrder(Order order) {
+			try {
+				Product product = productClient.getProductById(order.getProductId());
+				if (product != null) {
+					logger.info("Produit trouvé : " + product.getName());
+					return orderRepository.save(order);
+				} else {
+					throw new RuntimeException("Product not found");
+				}
+			} catch (Exception e) {
+
+				System.err.println("Error while adding order: " + e.getMessage());
+				throw new RuntimeException("Error processing the order");
+			}
+		}
+
+
 	    public Order updateOrder(Order order) {
 	        if (orderRepository.existsById(order.getId())) {
-	            return orderRepository.save(order); // Met à jour l'ordre existant
-	        } else {
-	            throw new RuntimeException("Commande non trouvée !");
+	            return orderRepository.save(order);
+			} else {
+			throw new RuntimeException("Commande non trouvée !");
 	        }
 	    }
 	    public List<Order> getAllOrders() {
@@ -25,7 +45,8 @@ public class OrderService {
 	            List<Order> orders = orderRepository.findAll();
 	            if (orders.isEmpty()) {
 	                System.err.println("Aucune commande trouvée !");
-	                throw new RuntimeException("Aucune commande trouvée !");
+
+	               throw new RuntimeException("Aucune commande trouvée !");
 	            }
 	            return orders;
 	        } catch (Exception e) {
@@ -35,20 +56,8 @@ public class OrderService {
 	    }
 
 	    public Order getOrderById(String id) {
-	        return orderRepository.findById(id).orElse(null);
+
+			return orderRepository.findById(id).orElse(null);
 	    }
 
-	    public Order addOrder(Order order) {
-	    	 try {
-	    	        Product product = productClient.getProductById(order.getProductId());
-	    	        if (product != null) {
-	    	            return orderRepository.save(order);
-	    	        } else {
-	    	            throw new RuntimeException("Product not found");
-	    	        }
-	    	    } catch (Exception e) {
-	    	        // Log de l'erreur
-	    	        System.err.println("Error while adding order: " + e.getMessage());
-	    	        throw new RuntimeException("Error processing the order");
-	    	    }
-}}
+}

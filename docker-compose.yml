@@ -32,6 +32,54 @@ services:
     networks:
       - ecommerce-net
     restart: on-failure
+  ms-productdb:
+    image: mysql:8
+    container_name: ms-productdb
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: ms-productdb
+    ports:
+      - "3306:3306"
+    networks:
+      - ecommerce-net
+    restart: always
+
+  ms-orderdb:
+    image: mysql:8
+    container_name: ms-orderdb
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: ms-orderdb
+    ports:
+      - "3307:3306"
+    networks:
+      - ecommerce-net
+    restart: always
+
+  ms-inventorydb:
+    image: mysql:8
+    container_name: ms-inventorydb
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: ms-inventorydb
+    ports:
+      - "3308:3306"
+    networks:
+      - ecommerce-net
+    restart: always
+
+  ms-paymentdb:
+    image: mysql:8
+    container_name: ms-paymentdb
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: ms-paymentdb
+    ports:
+      - "3309:3306"
+    networks:
+      - ecommerce-net
+    restart: always
+
 
   product-service:
     build:
@@ -43,8 +91,14 @@ services:
     depends_on:
       eureka-server:
         condition: service_healthy
+      ms-productdb:
+        condition: service_healthy
     networks:
       - ecommerce-net
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://ms-productdb:3306/ms-productdb
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=root
     restart: on-failure
 
   order-service:
@@ -57,8 +111,14 @@ services:
     depends_on:
       eureka-server:
         condition: service_healthy
+      ms-orderdb:
+        condition: service_healthy
     networks:
       - ecommerce-net
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://ms-orderdb:3306/ms-orderdb
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=root
     restart: on-failure
 
   inventory-service:
@@ -71,8 +131,14 @@ services:
     depends_on:
       eureka-server:
         condition: service_healthy
+      ms-inventorydb:
+        condition: service_healthy
     networks:
       - ecommerce-net
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://ms-inventorydb:3306/ms-inventorydb
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=root
     restart: on-failure
 
   payment-service:
@@ -85,6 +151,13 @@ services:
     depends_on:
       eureka-server:
         condition: service_healthy
+      ms-paymentdb:
+        condition: service_healthy
     networks:
       - ecommerce-net
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://ms-paymentdb:3306/ms-paymentdb
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=root
     restart: on-failure
+
