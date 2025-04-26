@@ -43,6 +43,11 @@ services:
     networks:
       - ecommerce-net
     restart: always
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-proot" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   ms-orderdb:
     image: mysql:8
@@ -55,6 +60,11 @@ services:
     networks:
       - ecommerce-net
     restart: always
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-proot" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   ms-inventorydb:
     image: mysql:8
@@ -67,6 +77,11 @@ services:
     networks:
       - ecommerce-net
     restart: always
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-proot" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   ms-paymentdb:
     image: mysql:8
@@ -79,6 +94,11 @@ services:
     networks:
       - ecommerce-net
     restart: always
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-proot" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
 
   product-service:
