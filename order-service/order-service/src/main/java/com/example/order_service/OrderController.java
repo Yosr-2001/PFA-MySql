@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 public class OrderController {
     private static final Logger logger = LoggerFactory.getLogger(OrderController.class);
 
-    /*   @Autowired*/
+    @Autowired
     private final OrderService orderService;
 
     public OrderController(OrderService orderService) {
@@ -36,7 +36,7 @@ public class OrderController {
     public Order addOrder(@RequestBody Order order) {
         return orderService.addOrder(order);
     } */
-  @PostMapping
+ /* @PostMapping
   public ResponseEntity<?> addOrder(@RequestBody Order order) {
       try {
           Order savedOrder = orderService.addOrder(order);
@@ -48,7 +48,23 @@ public class OrderController {
           logger.error("Failed to add order: {}", e.getMessage(), e);
           return ResponseEntity.status(500).body("Internal Server Error while adding order.");
       }
+  }*/
+  @PostMapping
+  public ResponseEntity<?> addOrder(@RequestBody Order order) {
+      logger.info("Received POST request to create order: {}", order);
+      try {
+          Order savedOrder = orderService.addOrder(order);
+          logger.info("Order saved successfully: {}", savedOrder);
+          return ResponseEntity.ok(savedOrder);
+      } catch (IllegalArgumentException e) {
+          logger.error("Invalid order data: {}", e.getMessage(), e);
+          return ResponseEntity.badRequest().body("Invalid order data: " + e.getMessage());
+      } catch (Exception e) {
+          logger.error("Unexpected error occurred while adding order: {}", e.getMessage(), e);
+          return ResponseEntity.status(500).body("Internal Server Error while adding order.");
+      }
   }
+
     @PutMapping("/{id}/pay")
     public Order payOrder(@PathVariable String id) {
         Order order = orderService.getOrderById(id);

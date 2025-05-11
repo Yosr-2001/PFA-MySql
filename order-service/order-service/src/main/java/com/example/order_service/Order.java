@@ -40,7 +40,6 @@ public class Order {
 	}
 
 
-	    // Constructeurs, getters et setters
 	    public String getStatus() {
 	        return status;
 	    }
@@ -48,4 +47,11 @@ public class Order {
 	    public void setStatus(String status) {
 	        this.status = status;
 	    }
+
+	public Order(String id, String productId, int quantity, String status) {
+		this.id = id;
+		this.productId = productId;
+		this.quantity = quantity;
+		this.status = status;
+	}
 }
