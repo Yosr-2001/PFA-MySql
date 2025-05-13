@@ -61,12 +61,12 @@ public class OrderService {
 	}
 
 
-	    public Order getOrderById(String id) {
+	    public Order getOrderById(Long id) {
 
 			return orderRepository.findById(id).orElse(null);
 	    }
 
-	public void deleteOrder(String id) {
+	public void deleteOrder(Long id) {
 		if (!orderRepository.existsById(id)) {
 			throw new RuntimeException("Commande introuvable !");
 		}

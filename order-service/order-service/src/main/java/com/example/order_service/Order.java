@@ -1,8 +1,6 @@
 package com.example.order_service;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name = "orders")
@@ -15,17 +13,20 @@ public class Order {
 		this.status = status;
 	}*/
 	@Id
-	    private String id;
+@GeneratedValue(strategy = GenerationType.AUTO)
+	    private Long id;
 	private String productId;
 	private int quantity;
 	private String status;
 
-	    public String getId() {
+	public Long getId() {
 		return id;
 	}
-	public void setId(String id) {
+
+	public void setId(Long id) {
 		this.id = id;
 	}
+
 	public String getProductId() {
 		return productId;
 	}
@@ -48,10 +49,13 @@ public class Order {
 	        this.status = status;
 	    }
 
-	public Order(String id, String productId, int quantity, String status) {
-		this.id = id;
+	public Order( String productId, int quantity, String status) {
+
 		this.productId = productId;
 		this.quantity = quantity;
 		this.status = status;
+	}
+
+	public Order() {
 	}
 }

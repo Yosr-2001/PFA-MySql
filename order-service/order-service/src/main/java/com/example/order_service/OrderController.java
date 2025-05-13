@@ -2,6 +2,7 @@ package com.example.order_service;
 
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.slf4j.Logger;
 
@@ -23,61 +24,64 @@ public class OrderController {
     }
 
     @GetMapping
-    public List<Order> getAllOrders() {
-        return orderService.getAllOrders();
+    public ResponseEntity<List<Order>> getAllOrders() {
+        try {
+            List<Order> orders = orderService.getAllOrders();
+            return ResponseEntity.ok(orders);
+        } catch (Exception e) {
+            logger.error("Error retrieving orders: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
     @GetMapping("/{id}")
-    public Order getOrderById(@PathVariable String id) {
+    public Order getOrderById(@PathVariable Long id) {
         return orderService.getOrderById(id);
     }
-
-  /*  @PostMapping
-    public Order addOrder(@RequestBody Order order) {
-        return orderService.addOrder(order);
-    } */
- /* @PostMapping
-  public ResponseEntity<?> addOrder(@RequestBody Order order) {
-      try {
-          Order savedOrder = orderService.addOrder(order);
-          return ResponseEntity.ok(savedOrder);
-      } catch (IllegalArgumentException e) {
-          logger.error("Invalid order data: {}", e.getMessage(), e);
-          return ResponseEntity.badRequest().body("Invalid order data: " + e.getMessage());
-      } catch (Exception e) {
-          logger.error("Failed to add order: {}", e.getMessage(), e);
-          return ResponseEntity.status(500).body("Internal Server Error while adding order.");
-      }
-  }*/
-  @PostMapping
-  public ResponseEntity<?> addOrder(@RequestBody Order order) {
-      logger.info("Received POST request to create order: {}", order);
-      try {
-          Order savedOrder = orderService.addOrder(order);
-          logger.info("Order saved successfully: {}", savedOrder);
-          return ResponseEntity.ok(savedOrder);
-      } catch (IllegalArgumentException e) {
-          logger.error("Invalid order data: {}", e.getMessage(), e);
-          return ResponseEntity.badRequest().body("Invalid order data: " + e.getMessage());
-      } catch (Exception e) {
-          logger.error("Unexpected error occurred while adding order: {}", e.getMessage(), e);
-          return ResponseEntity.status(500).body("Internal Server Error while adding order.");
-      }
-  }
-
+    @PostMapping
+    public ResponseEntity<?> addOrder(@RequestBody Order order) {
+        try {
+            if (order == null ) {
+                throw new IllegalArgumentException("Order must contain items.");
+                }
+            Order savedOrder = orderService.addOrder(order);
+            return ResponseEntity.status(HttpStatus.CREATED).body(savedOrder);
+        } catch (IllegalArgumentException e) {
+            logger.error("Invalid order data: {}", e.getMessage(), e);
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (Exception e) {
+            logger.error("Unexpected error occurred while adding order: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Internal Server Error while adding order.");
+        }
+    }
     @PutMapping("/{id}/pay")
-    public Order payOrder(@PathVariable String id) {
+    public ResponseEntity<?> payOrder(@PathVariable Long id) {
+        try {
+            Order order = orderService.getOrderById(id);
+            if (order == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Commande non trouvée !");
+            }
+            order.setStatus("PAID");
+            orderService.updateOrder(order);
+            return ResponseEntity.ok(order);
+        } catch (RuntimeException e) {
+            logger.error("Error processing payment for order ID {}: {}", id, e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
+    /*  @PutMapping("/{id}/pay")
+  public Order payOrder(@PathVariable String id) {
         Order order = orderService.getOrderById(id);
         if (order != null) {
             order.setStatus("PAID");
             return orderService.updateOrder(order);
         } else {
             throw new RuntimeException("Commande non trouvée !");
-        } 
-}
+        }
+}*/
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteOrder(@PathVariable String id) {
+    public ResponseEntity<?> deleteOrder(@PathVariable Long id) {
         try {
             orderService.deleteOrder(id);
             return ResponseEntity.ok().build();
