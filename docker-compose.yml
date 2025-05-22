@@ -15,7 +15,7 @@ services:
     restart: on-failure
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8761"]
-      interval: 10s
+      interval: 10s 
       timeout: 5s
       retries: 5
 
