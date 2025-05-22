@@ -26,7 +26,7 @@ jobs:
     - name: Deploy via SSH
       run: |
         ssh -i ~/.ssh/id_rsa ec2-user@${{ secrets.EC2_HOST }} << 'EOF'
-          cd PFA-MySql
+          cd /home/ec2-user/PFA-MySql
           git pull origin main
           docker-compose down
           docker-compose up -d --build
