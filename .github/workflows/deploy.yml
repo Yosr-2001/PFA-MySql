@@ -22,7 +22,7 @@ jobs:
       - name: Add EC2 to known hosts
         run: |
           set -e
-          ssh-keyscan -H ${{ secrets.EC2_HOST }} > ~/.ssh/known_hosts
+          ssh-keyscan -H ${{ secrets.EC2_HOST }} > ~/.ssh/known_hosts || true
           cat ~/.ssh/known_hosts
 
       - name: Deploy via SSH
