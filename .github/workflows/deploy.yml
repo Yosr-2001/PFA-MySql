@@ -29,7 +29,7 @@ jobs:
         run: |
           set -e
           ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no ec2-user@${{ secrets.EC2_HOST }} << 'EOF'
-            cd PFA-MySql
+            cd /home/ec2-user/PFA-MySql
             git pull origin main
             docker-compose down
             docker-compose up -d --build
