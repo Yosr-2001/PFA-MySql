@@ -3,34 +3,28 @@ name: Deploy to EC2
 on:
   push:
     branches:
-      - main
+      - main  
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
+      - name: Checkout repo
         uses: actions/checkout@v3
 
-      - name: Set up SSH key
+      - name: Set up SSH
         run: |
           mkdir -p ~/.ssh
-          echo "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/id_rsa
+          echo "${{ secrets.EC2_SSH_KEY2 }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H ${{ secrets.EC2_HOST2 }} >> ~/.ssh/known_hosts
 
-      - name: Add EC2 to known hosts
+      - name: Connect & Deploy
         run: |
-          set -e
-          ssh-keyscan -H ${{ secrets.EC2_HOST }} > ~/.ssh/known_hosts || true
-          cat ~/.ssh/known_hosts
-
-      - name: Deploy via SSH
-        run: |
-          set -e
-          ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no ec2-user@${{ secrets.EC2_HOST }} << 'EOF'
-            cd /home/ec2-user/PFA-MySql
+          ssh ${{ secrets.EC2_USER2 }}@${{ secrets.EC2_HOST2 }} << 'EOF'
+            cd ${{ secrets.EC2_PATH }}
             git pull origin main
             docker-compose down
-            docker-compose up -d --build
+            docker-compose up --build -d
           EOF
