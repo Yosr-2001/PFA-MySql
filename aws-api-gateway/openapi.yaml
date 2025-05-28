@@ -1,0 +1,189 @@
+openapi: 3.0.1
+info:
+  title: Microservices API Gateway
+  version: '1.0'
+
+paths:
+
+  # === Product Service ===
+  /product-service/products:
+    get:
+      summary: Get all products
+      x-amazon-apigateway-integration:
+        uri: http://44.210.54.122:8081/products
+        httpMethod: GET
+        type: http_proxy
+      responses:
+        '200':
+          description: List of products
+
+    post:
+      summary: Create a product
+      x-amazon-apigateway-integration:
+        uri: http://44.210.54.122:8081/products
+        httpMethod: POST
+        type: http_proxy
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                name:
+                  type: string
+                price:
+                  type: number
+      responses:
+        '201':
+          description: Product created
+
+
+  # === Inventory Service ===
+  /inventory-service/inventory/{productId}:
+    get:
+      summary: Get inventory for a product
+      parameters:
+        - name: productId
+          in: path
+          required: true
+          schema:
+            type: string
+      x-amazon-apigateway-integration:
+        uri: http://44.210.54.122:8083/inventory/{productId}
+        httpMethod: GET
+        type: http_proxy
+      responses:
+        '200':
+          description: Inventory details
+
+    put:
+      summary: Update inventory quantity for a product
+      parameters:
+        - name: productId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: quantity
+          in: query
+          required: true
+          schema:
+            type: integer
+      x-amazon-apigateway-integration:
+        uri: http://44.210.54.122:8083/inventory/{productId}
+        httpMethod: PUT
+        type: http_proxy
+      responses:
+        '200':
+          description: Inventory updated
+
+  /inventory-service/inventory/{productId}/add:
+    post:
+      summary: Add quantity to inventory
+      parameters:
+        - name: productId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: quantity
+          in: query
+          required: true
+          schema:
+            type: integer
+      x-amazon-apigateway-integration:
+        uri: http://44.210.54.122:8083/inventory/{productId}/add?quantity={quantity}
+        httpMethod: POST
+        type: http_proxy
+      responses:
+        '200':
+          description: Quantity added to inventory
+
+
+  # === Order Service ===
+  /order-service/orders:
+    get:
+      summary: Get all orders
+      x-amazon-apigateway-integration:
+        uri: http://44.210.54.122:8090/order-service/orders
+        httpMethod: GET
+        type: http_proxy
+      responses:
+        '200':
+          description: List of orders
+
+    post:
+      summary: Create an order
+      x-amazon-apigateway-integration:
+        uri: http://44.210.54.122:8090/order-service/orders
+        httpMethod: POST
+        type: http_proxy
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                productId:
+                  type: string
+                quantity:
+                  type: integer
+                status:
+                  type: string
+      responses:
+        '201':
+          description: Order created
+
+  /order-service/orders/{orderId}:
+    get:
+      summary: Get order by ID
+      parameters:
+        - name: orderId
+          in: path
+          required: true
+          schema:
+            type: string
+      x-amazon-apigateway-integration:
+        uri: http://44.210.54.122:8090/order-service/orders/{orderId}
+        httpMethod: GET
+        type: http_proxy
+      responses:
+        '200':
+          description: Order details
+
+
+  # === Payment Service ===
+  /payment-service/payments:
+    get:
+      summary: Get all payments
+      x-amazon-apigateway-integration:
+        uri: http://44.210.54.122:8090/payment-service/payments
+        httpMethod: GET
+        type: http_proxy
+      responses:
+        '200':
+          description: List of payments
+
+    post:
+      summary: Create a payment
+      x-amazon-apigateway-integration:
+        uri: http://44.210.54.122:8090/payment-service/payments
+        httpMethod: POST
+        type: http_proxy
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                orderId:
+                  type: integer
+                amount:
+                  type: number
+                status:
+                  type: string
+      responses:
+        '201':
+          description: Payment created
