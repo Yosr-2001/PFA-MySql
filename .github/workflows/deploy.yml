@@ -28,3 +28,11 @@ jobs:
             docker-compose down
             docker-compose up --build -d
           EOF
+
+#Ce workflow automatise le déploiement sur ta machine EC2 :
+  #Dès que tu pousses du code sur main
+  #GitHub Actions se connecte par SSH à ton serveur EC2
+  #Récupère les dernières modifications de code
+  #Redémarre tes conteneurs Docker pour que la nouvelle version soit active
+
+
