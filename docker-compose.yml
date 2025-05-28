@@ -1,7 +1,13 @@
 networks:
   ecommerce-net:
     driver: bridge
-
+    
+volumes:
+  product-db-data:
+  order-db-data:
+  inventory-db-data:
+  payment-db-data:
+  
 services:
   eureka-server:
     build:
@@ -32,6 +38,7 @@ services:
     networks:
       - ecommerce-net
     restart: on-failure
+    
   ms-productdb:
     image: mysql:8
     container_name: ms-productdb
@@ -42,6 +49,8 @@ services:
       - "3306:3306"
     networks:
       - ecommerce-net
+    volumes:
+      - product-db-data:/var/lib/mysql
     restart: always
     healthcheck:
       test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-proot" ]
@@ -59,6 +68,8 @@ services:
       - "3307:3306"
     networks:
       - ecommerce-net
+    volumes:
+      - order-db-data:/var/lib/mysql
     restart: always
     healthcheck:
       test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-proot" ]
@@ -76,6 +87,8 @@ services:
       - "3308:3306"
     networks:
       - ecommerce-net
+    volumes:
+      - inventory-db-data:/var/lib/mysql  
     restart: always
     healthcheck:
       test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-proot" ]
@@ -93,6 +106,8 @@ services:
       - "3309:3306"
     networks:
       - ecommerce-net
+    volumes:
+      - payment-db-data:/var/lib/mysql
     restart: always
     healthcheck:
       test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-proot" ]
